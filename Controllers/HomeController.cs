@@ -1,11 +1,20 @@
+using Counselor.Data;
 using Counselor.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace Counselor.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ApplicationDbContext _db;
+
+        public HomeController(ApplicationDbContext db)
+        {
+            _db = db;
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -31,14 +40,23 @@ namespace Counselor.Controllers
             return View();
         }
 
-        public IActionResult Blog()
+        public async Task<IActionResult> Blog()
         {
-            return View();
+            var blogs = await _db.Blogs
+                .Where(b => b.IsPublished)
+                .OrderByDescending(b => b.PublishedDate)
+                .ToListAsync();
+            return View(blogs);
         }
 
-        public IActionResult BlogSingle()
+        public async Task<IActionResult> BlogSingle(int id)
         {
-            return View();
+            var blog = await _db.Blogs.FindAsync(id);
+            if (blog == null || !blog.IsPublished)
+            {
+                return NotFound();
+            }
+            return View(blog);
         }
 
         public IActionResult Contact()

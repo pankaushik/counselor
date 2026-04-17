@@ -1,0 +1,107 @@
+@model IEnumerable<Counselor.Models.Blog>
+@{
+    ViewData["Title"] = "Manage Blogs";
+}
+
+<div class="container mt-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Admin Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Manage Blogs</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Manage Blogs</h1>
+        <a asp-action="CreateBlog" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Create New Blog
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Published Date</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var blog in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@blog.Title</strong>
+                                        @if (!string.IsNullOrEmpty(blog.Summary))
+                                        {
+                                            <br />
+                                            <small class="text-muted">@blog.Summary.Substring(0, Math.Min(100, blog.Summary.Length))...</small>
+                                        }
+                                    </td>
+                                    <td>@(blog.Author ?? "Anonymous")</td>
+                                    <td>@blog.PublishedDate.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        @if (blog.IsPublished)
+                                        {
+                                            <span class="badge badge-success">Published</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">Draft</span>
+                                        }
+                                    </td>
+                                    <td>@blog.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="BlogDetails" asp-route-id="@blog.Id" class="btn btn-sm btn-info" title="View">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                            <a asp-action="EditBlog" asp-route-id="@blog.Id" class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <a asp-action="DeleteBlog" asp-route-id="@blog.Id" class="btn btn-sm btn-danger" title="Delete">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <i class="fa fa-info-circle fa-2x mb-2"></i>
+            <h5>No Blogs Yet</h5>
+            <p class="mb-0">Create your first blog post to get started.</p>
+        </div>
+    }
+</div>
+
+<style>
+    .table td {
+        vertical-align: middle;
+    }
+</style>

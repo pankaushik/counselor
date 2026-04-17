@@ -1,0 +1,134 @@
+@model Counselor.Models.Blog
+@{
+    ViewData["Title"] = "Blog Details";
+}
+
+<div class="container mt-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Admin Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="Blogs">Manage Blogs</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Blog Details</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Blog Details</h3>
+                    <div>
+                        <a asp-action="EditBlog" asp-route-id="@Model.Id" class="btn btn-sm btn-warning">
+                            <i class="fa fa-edit"></i> Edit
+                        </a>
+                        <a asp-action="DeleteBlog" asp-route-id="@Model.Id" class="btn btn-sm btn-danger">
+                            <i class="fa fa-trash"></i> Delete
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h2 class="mb-3">@Model.Title</h2>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p class="text-muted mb-1">
+                                <i class="fa fa-user mr-2"></i>
+                                <strong>Author:</strong> @(Model.Author ?? "Anonymous")
+                            </p>
+                            <p class="text-muted mb-1">
+                                <i class="fa fa-calendar mr-2"></i>
+                                <strong>Published:</strong> @Model.PublishedDate.ToString("MMMM dd, yyyy")
+                            </p>
+                            <p class="text-muted mb-1">
+                                <i class="fa fa-clock-o mr-2"></i>
+                                <strong>Created:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy hh:mm tt")
+                            </p>
+                            @if (Model.UpdatedAt.HasValue)
+                            {
+                                <p class="text-muted mb-1">
+                                    <i class="fa fa-refresh mr-2"></i>
+                                    <strong>Updated:</strong> @Model.UpdatedAt.Value.ToString("MMM dd, yyyy hh:mm tt")
+                                </p>
+                            }
+                        </div>
+                        <div class="col-md-6 text-md-right">
+                            @if (Model.IsPublished)
+                            {
+                                <span class="badge badge-success badge-lg">
+                                    <i class="fa fa-check-circle"></i> Published
+                                </span>
+                                <br />
+                                <a asp-controller="Home" asp-action="BlogSingle" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary mt-2" target="_blank">
+                                    <i class="fa fa-external-link"></i> View Public Page
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="badge badge-secondary badge-lg">
+                                    <i class="fa fa-file-o"></i> Draft
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Summary))
+                    {
+                        <div class="alert alert-info">
+                            <h5><i class="fa fa-info-circle"></i> Summary</h5>
+                            <p class="mb-0">@Model.Summary</p>
+                        </div>
+                    }
+
+                    <hr />
+
+                    <h4>Content</h4>
+                    <div class="blog-content p-3 bg-light rounded">
+                        @Html.Raw(Model.Content)
+                    </div>
+
+                    <hr />
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Blogs" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left"></i> Back to List
+                        </a>
+                        <div>
+                            <a asp-action="EditBlog" asp-route-id="@Model.Id" class="btn btn-warning">
+                                <i class="fa fa-edit"></i> Edit
+                            </a>
+                            <a asp-action="DeleteBlog" asp-route-id="@Model.Id" class="btn btn-danger">
+                                <i class="fa fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .badge-lg {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+
+    .blog-content {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+    .blog-content p {
+        margin-bottom: 1rem;
+    }
+
+    .blog-content h1,
+    .blog-content h2,
+    .blog-content h3,
+    .blog-content h4,
+    .blog-content h5,
+    .blog-content h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+</style>

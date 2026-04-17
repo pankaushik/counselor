@@ -14,6 +14,21 @@ namespace Counselor.Controllers
             _db = db;
         }
 
+        // Dashboard
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var stats = new
+            {
+                TotalBlogs = await _db.Blogs.CountAsync(),
+                PublishedBlogs = await _db.Blogs.CountAsync(b => b.IsPublished),
+                DraftBlogs = await _db.Blogs.CountAsync(b => !b.IsPublished),
+                TotalAppointments = await _db.Appointments.CountAsync(),
+                UpcomingAppointments = await _db.Appointments.CountAsync(a => a.AppointmentDate > DateTime.Now)
+            };
+            return View(stats);
+        }
+
         // READ - Get all blogs
         [HttpGet]
         public async Task<IActionResult> Blogs()
