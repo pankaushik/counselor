@@ -1,0 +1,53 @@
+@model Counselor.Models.Appointment
+
+<div class="appointment-component">
+    <form id="editAppointmentForm" asp-action="Edit" asp-controller="Appointment" method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="CreatedAt" />
+        
+        <div class="form-group">
+            <label asp-for="FullName"></label>
+            <input asp-for="FullName" class="form-control" />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Phone"></label>
+            <input asp-for="Phone" class="form-control" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Service"></label>
+            <select asp-for="Service" class="form-control">
+                <option>Individual Counseling</option>
+                <option>Couples Counseling</option>
+                <option>Family Therapy</option>
+                <option>Depression Treatment</option>
+            </select>
+            <span asp-validation-for="Service" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="AppointmentDate"></label>
+            <input asp-for="AppointmentDate" type="datetime-local" class="form-control" />
+            <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Notes"></label>
+            <textarea asp-for="Notes" class="form-control"></textarea>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Update Appointment</button>
+            <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function closeEditModal() {
+        $('#editModal').modal('hide');
+    }
+</script>

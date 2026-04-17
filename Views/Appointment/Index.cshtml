@@ -1,0 +1,257 @@
+@model IEnumerable<Counselor.Models.Appointment>
+@{
+    ViewData["Title"] = "Appointments";
+}
+
+@Html.AntiForgeryToken()
+
+<section class="hero-wrap hero-wrap-2" style="background-image: url('/Html/images/bg_5.jpg');" data-stellar-background-ratio="0.5">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate mb-5 text-center">
+                <p class="breadcrumbs mb-0"><span class="mr-2"><a asp-controller="Home" asp-action="Index">Home <i class="fa fa-chevron-right"></i></a></span> <span>Appointments <i class="fa fa-chevron-right"></i></span></p>
+                <h1 class="mb-0 bread">Appointments</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row">
+            <!-- Appointment Form -->
+            <div class="col-lg-5 col-md-12 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">Schedule New Appointment</h3>
+                    </div>
+                    <div class="card-body">
+                        @await Html.PartialAsync("_CreateAppointment", new Counselor.Models.Appointment())
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments List -->
+            <div class="col-lg-7 col-md-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h3 class="mb-0">Your Appointments</h3>
+                    </div>
+                    <div class="card-body">
+                        @if (Model != null && Model.Any())
+                        {
+                            <div class="appointments-list">
+                                @foreach (var appointment in Model)
+                                {
+                                    <div class="appointment-card mb-3 p-3 border rounded">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div class="flex-grow-1">
+                                                    <h5 class="mb-1">@appointment.FullName</h5>
+                                                    <p class="mb-1 text-muted">
+                                                        <i class="fa fa-calendar mr-2"></i>
+                                                        <strong>Date:</strong> @appointment.AppointmentDate.ToString("MMMM dd, yyyy hh:mm tt")
+                                                    </p>
+                                                    <p class="mb-1 text-muted">
+                                                        <i class="fa fa-briefcase mr-2"></i>
+                                                        <strong>Service:</strong> @appointment.Service
+                                                    </p>
+                                                    <p class="mb-1 text-muted">
+                                                        <i class="fa fa-envelope mr-2"></i>
+                                                        <strong>Email:</strong> @appointment.Email
+                                                    </p>
+                                                    @if (!string.IsNullOrEmpty(appointment.Phone))
+                                                    {
+                                                        <p class="mb-1 text-muted">
+                                                            <i class="fa fa-phone mr-2"></i>
+                                                            <strong>Phone:</strong> @appointment.Phone
+                                                        </p>
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(appointment.Notes))
+                                                    {
+                                                        <p class="mb-1 text-muted">
+                                                            <i class="fa fa-sticky-note mr-2"></i>
+                                                            <strong>Notes:</strong> @appointment.Notes
+                                                        </p>
+                                                    }
+                                                </div>
+                                                <div class="d-flex flex-column align-items-end">
+                                                    @if (appointment.AppointmentDate > DateTime.Now)
+                                                    {
+                                                        <span class="badge badge-success mb-2">Upcoming</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-secondary mb-2">Past</span>
+                                                    }
+                                                    <div class="btn-group-vertical" role="group">
+                                                        <button type="button" class="btn btn-sm btn-primary mb-1" onclick="editAppointment(@appointment.Id)">
+                                                            <i class="fa fa-edit"></i> Edit
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteAppointment(@appointment.Id)">
+                                                            <i class="fa fa-trash"></i> Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="my-2" />
+                                            <small class="text-muted">
+                                                <i class="fa fa-clock-o mr-1"></i>
+                                                Scheduled on: @appointment.CreatedAt.ToString("MMM dd, yyyy")
+                                            </small>
+                                        </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info text-center" role="alert">
+                                <i class="fa fa-info-circle fa-2x mb-2"></i>
+                                <h5>No Appointments Yet</h5>
+                                <p class="mb-0">Schedule your first appointment using the form on the left.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="editModalLabel">Edit Appointment</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="editModalBody">
+                <!-- Edit form will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .appointment-card {
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+    .appointment-card:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+
+    .card {
+        border-radius: 10px;
+        border: none;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+        padding: 1rem 1.5rem;
+    }
+
+    .badge {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        $(function() {
+            // Create appointment
+            $(document).on('submit', '#appointmentForm', function (e) {
+                e.preventDefault();
+                var $form = $(this);
+                $.ajax({
+                    url: $form.attr('action'),
+                    method: 'POST',
+                    data: $form.serialize(),
+                    success: function (res) {
+                        if (res.success) {
+                            alert(res.message);
+                            window.location.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+
+            // Edit appointment - form submission
+            $(document).on('submit', '#editAppointmentForm', function (e) {
+                e.preventDefault();
+                var $form = $(this);
+                $.ajax({
+                    url: $form.attr('action'),
+                    method: 'POST',
+                    data: $form.serialize(),
+                    success: function (res) {
+                        if (res.success) {
+                            alert(res.message);
+                            $('#editModal').modal('hide');
+                            window.location.reload();
+                        } else {
+                            alert(res.message || 'An error occurred.');
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+        });
+
+        // Load edit form
+        function editAppointment(id) {
+            $.ajax({
+                url: '@Url.Action("Edit", "Appointment")/' + id,
+                method: 'GET',
+                success: function(html) {
+                    $('#editModalBody').html(html);
+                    $('#editModal').modal('show');
+
+                    // Reinitialize validation
+                    $.validator.unobtrusive.parse('#editAppointmentForm');
+                },
+                error: function() {
+                    alert('Failed to load appointment details.');
+                }
+            });
+        }
+
+        // Delete appointment
+        function deleteAppointment(id) {
+            if (confirm('Are you sure you want to delete this appointment?')) {
+                $.ajax({
+                    url: '@Url.Action("Delete", "Appointment")',
+                    method: 'POST',
+                    data: { 
+                        id: id,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            alert(res.message);
+                            window.location.reload();
+                        } else {
+                            alert(res.message || 'Failed to delete appointment.');
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            }
+        }
+    </script>
+}
